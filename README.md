@@ -10,7 +10,7 @@ A Haskell program to efficiently calculate the Fibonacci numbers is as follows:
 
 ```
 fibs :: [Integer]
-fibs =  1:1:(zipWith (+) fibs (tail fibs))
+fibs = 1 : 1 : zipWith (+) fibs (tail fibs)
 ```
 
 This **astounding** one liner takes advantage of the laziness of lists, and now
@@ -18,14 +18,19 @@ it is possible to horribly recreate this in Typescript, causing much pain to man
 programmers of many lifestyles and paradigms:
 
 ```
-let fibs: List<number> = List.cons(1, List.cons(1, new List(() =>
+let fibs: List<number> = List.cons(1, new List(() =>
     just([1, zipWith((x, y) => x + y, fibs, fibs.tail())])
-)));
+  ));
 ```
 
 ### Monadic List Comprehensions
 
-In Haskell, we may like to do a list comprehension to retrieve all Pythagorean triples.
+In Haskell, we may like to do a list comprehension to retrieve all Pythagorean triples:
+
+```
+pythag = [(x, y, z) | z <- [1..], y <- [1..z], x <- [y..z], x * x + y * y == z * z]
+```
+
 Alternatively, since lists form a monad, we may write this in the following do-style notation:
 
 ```

@@ -89,7 +89,7 @@ class List<T> extends Lazy<ListElem<T>> implements Monad<T> {
   bind<U>(f: (t: T) => List<U>) {
     return concat(this.fmap(f));
   }
-  
+
   static cons<T>(t: T, ts: List<T>): List<T> {
     return new List(() => just([t, ts]));
   }
@@ -207,13 +207,14 @@ function zipWith<T>(f: (x: T, y: T) => T, xs: List<T>, ys: List<T>): List<T> {
 console.log(List.range(1, Infinity).tail().take(Infinity).take(5).toArray());
 
 function fib(n: number): number {
-  let fibs: List<number> = List.cons(1, List.cons(1, new List(() =>
+  let fibs: List<number> = List.cons(1, new List(() =>
     just([1, zipWith((x, y) => x + y, fibs, fibs.tail())])
-  )));
+  ));
   return fibs.take(n + 1).toArray()[n];
 }
 
-console.log(fib(100));
+console.log("Fib");
+console.log(fib(3));
 
 // console.log(concat(List.cons(List.range(1, 5), List.cons(List.range(2, Infinity), List.nil()))).take(10).toArray());
 // console.log(List.range(1, Infinity).fmap(i => i / 5).take(10).toArray());
