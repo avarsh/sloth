@@ -19,8 +19,8 @@ programmers of many lifestyles and paradigms:
 
 ```
 let fibs: List<number> = List.cons(1, new List(() =>
-    just([1, zipWith((x, y) => x + y, fibs, fibs.tail())])
-  ));
+    Maybe.just([1, zipWith((x, y) => x + y, fibs, fibs.tail())])
+));
 ```
 
 ### Monadic List Comprehensions
