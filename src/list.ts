@@ -11,13 +11,7 @@ export class List<T> extends Lazy<ListElem<T>> implements Monad<T> {
   }
   
   fmap<U>(f: (t: T) => U): List<U> {
-    const maybe = this.get();
-    if (maybe.isNothing()) {
-      return List.nil();
-    } else {
-      const [x, xs] = maybe.value;
-      return new List(() => Maybe.just([f(x), xs.fmap(f)]));
-    }
+    return new List(() => this.get().fmap(([x, xs]) => [f(x), xs.fmap(f)]));
   }
   
   ap<U>(f: List<(t: T) => U>): List<U> {
@@ -34,7 +28,7 @@ export class List<T> extends Lazy<ListElem<T>> implements Monad<T> {
     });
   }
   
-  bind<U>(f: (t: T) => List<U>) {
+  bind<U>(f: (t: T) => List<U>): List<U> {
     return concat(this.fmap(f));
   }
 
@@ -55,6 +49,10 @@ export class List<T> extends Lazy<ListElem<T>> implements Monad<T> {
     return List.cons(t, List.fromArray(ts));
   }
   
+  static repeat(n: number): List<number> {
+    return new List(() => Maybe.just([n, List.repeat(n)]));
+  }
+  
   static range(start: number, end: number): List<number> {
     if (start > end) {
       return List.nil();
@@ -71,16 +69,15 @@ export class List<T> extends Lazy<ListElem<T>> implements Monad<T> {
     }
   }
   
+  at(n: number): T {
+    return this.take(n + 1).toArray()[n];
+  }
+  
   take(n: number): List<T> {
-    if (n == 0) { return List.nil(); }
-    else {
-      let next = this.get();
-      if (next.isNothing()) { return List.nil(); }
-      else {
-        const [t, ts] = next.value;
-        return new List(() => Maybe.just([t, ts.take(n - 1)]));
-      }
-    }
+    return new List(() => {
+      if (n == 0) return Maybe.nothing();
+      return this.get().fmap(([t, ts]) => [t, ts.take(n - 1)]);
+    });
   }
   
   toArray(): T[] {
@@ -150,4 +147,14 @@ export function zipWith<T>(f: (x: T, y: T) => T, xs: List<T>, ys: List<T>): List
     
     return xMaybe;
   });
+}
+
+export function sum(ls: List<number>): number {
+  const numbers = ls.toArray();
+  let total = 0;
+  for (let n of numbers) {
+    total += n;
+  }
+  
+  return total;
 }

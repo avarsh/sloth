@@ -1,4 +1,4 @@
-import { List, zipWith, concat } from "../src/list";
+import { List, zipWith, concat, sum } from "../src/list";
 import { Maybe } from "../src/maybe";
 
 console.log(List
@@ -48,3 +48,49 @@ const pythag: List<[number, number, number]> = List
 ))));
   
 console.log(pythag.take(5).toArray());
+
+// Knight Dialer
+
+const initial: List<number> = List.repeat(1).take(10);
+
+function neighbours(x: number): List<number> {
+  switch (x) {
+    case 1:
+      return List.fromArray([6, 8]);
+    case 2:
+      return List.fromArray([7, 9]);
+    case 3:
+      return List.fromArray([4, 8]);
+    case 4:
+      return List.fromArray([3, 9, 0]);
+    case 5:
+      return List.fromArray([]);
+    case 6:
+      return List.fromArray([1, 7, 0]);
+    case 7:
+      return List.fromArray([2, 6]);
+    case 8:
+      return List.fromArray([1, 3]);
+    case 9:
+      return List.fromArray([2, 4]);
+    case 0:
+      return List.fromArray([4, 6]);
+  }
+  
+  throw new Error(`Number ${x} not supported`);
+}
+
+function calc(prev: List<number>): List<number> {
+  return List
+    .range(0, 9)
+    .bind((x) => List
+    .pure(
+      sum(neighbours(x).fmap((n) => prev.at(n))
+  )));
+}
+
+const knights: List<List<number>> = new List(() => 
+  Maybe.just([ initial, knights.fmap(calc)]))
+
+console.log("Knights!");
+console.log(knights.at(2).at(6));
