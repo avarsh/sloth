@@ -14,18 +14,8 @@ export class List<T> extends Lazy<ListElem<T>> implements Monad<T> {
     return new List(() => this.get().fmap(([x, xs]) => [f(x), xs.fmap(f)]));
   }
   
-  ap<U>(f: List<(t: T) => U>): List<U> {
-    return new List(() => {
-      const fMaybe = f.get();
-      const maybe = this.get();
-      if (fMaybe.isNothing() || maybe.isNothing()) {
-        return Maybe.nothing();
-      }
-      
-      const [g, gs] = fMaybe.value;
-      const [x, xs] = maybe.value;
-      return Maybe.just([g(x), xs.ap(gs)]);
-    });
+  ap<U>(fs: List<(t: T) => U>): List<U> {
+    return fs.bind((f: (t: T) => U) => this.bind((t: T) => List.pure(f(t))));
   }
   
   bind<U>(f: (t: T) => List<U>): List<U> {

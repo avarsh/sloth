@@ -58,7 +58,7 @@ class Maybe<A> implements Monad<A> {
   }
   
   static return<T>(t: T) {
-    return new Maybe(t);
+    return Maybe.pure(t);
   }
   
   bind<B>(f: ((a: A) => Maybe<B>)): Maybe<B> {
